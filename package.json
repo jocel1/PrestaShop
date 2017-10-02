@@ -9,5 +9,9 @@
         "test-verbose": "cd tests/js && grunt --stack test-verbose"
     },
     "author": "PrestaShop",
-    "license": "OSL-3.0"
+    "license": "OSL-3.0",
+    "dependencies": {
+        "ps_functional_tests": "github:prestashop/PSFunctionalTests",
+        "selenium-standalone": "^6.9.0"
+    }
 }
