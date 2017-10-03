@@ -711,6 +711,6 @@ class EmployeeCore extends ObjectModel
     {
         $access = Profile::getProfileAccess($this->id_profile, Tab::getIdFromClassName($tab));
 
-        return ($access[$action] == '1');
+        return (defined('PS_INSTALLATION_IN_PROGRESS') || $access[$action] == '1');
     }
 }

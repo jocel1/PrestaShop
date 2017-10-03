@@ -368,7 +368,6 @@ class Install extends AbstractInstall
         // Clean all cache values
         Cache::clean('*');
 
-        $_SERVER['HTTP_HOST'] = 'localhost';
         $this->language->setLanguage('en');
         $context = Context::getContext();
         $context->shop = new Shop(1);
@@ -401,6 +400,7 @@ class Install extends AbstractInstall
 
         $context->cart = new Cart();
         $context->employee = new Employee(1);
+
         if (!defined('_PS_SMARTY_FAST_LOAD_')) {
             define('_PS_SMARTY_FAST_LOAD_', true);
         }
@@ -408,6 +408,8 @@ class Install extends AbstractInstall
 
         $context->smarty = $smarty;
     }
+
+
 
     /**
      * PROCESS : installDefaultData

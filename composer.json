@@ -158,8 +158,8 @@
         "@php -d date.timezone=UTC ./vendor/bin/phpunit -c tests/old-controllers.xml"
       ],
       "phpunit-selenium": [
-          "Tests\\PrestaShopBundle\\Utils\\Database::createTestDB",
-          "./tests/start-selenium-tests.sh"
+        "@composer create-test-db 127.0.0.1:8083 1",
+        "./tests/start-selenium-tests.sh 127.0.0.1:8083"
       ],
       "git-hook-install": "php .github/contrib/install.php",
       "git-hook-uninstall": "php .github/contrib/uninstall.php",
