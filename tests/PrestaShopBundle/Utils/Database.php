@@ -26,6 +26,7 @@
 
 namespace Tests\PrestaShopBundle\Utils;
 
+use Composer\Script\Event;
 use Doctrine\DBAL\DBALException;
 use PrestaShopBundle\Install\DatabaseDump;
 use PrestaShopBundle\Install\Install;
@@ -34,14 +35,35 @@ class Database
 {
     /**
      * Create the initialize database used for test
+     *
+     * composer create-test-db could receive some args :
+     * first arg in the HTTP_HOST we want to use
+     * second arg control if we want to load the default prestashop modules
+     *
+     * @param Event|null $event
      */
-    public static function createTestDB()
+    public static function createTestDB(Event $event = null)
     {
         define('_PS_IN_TEST_', true);
         define('__PS_BASE_URI__', '/');
         define('_PS_ROOT_DIR_', __DIR__ . '/../../..');
-        define('_PS_MODULE_DIR_', _PS_ROOT_DIR_ . '/tests/resources/modules/');
+
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $module_dir = _PS_ROOT_DIR_ . '/tests/resources/modules/';
+
+        if ($event) {
+            $args = $event->getArguments();
+            if (!empty($args)) {
+                $_SERVER['HTTP_HOST'] = $args[0];
+                if (isset($args[1])) {
+                    $module_dir = _PS_ROOT_DIR_ . '/modules/';
+                }
+            }
+        }
+
+        define('_PS_MODULE_DIR_', $module_dir);
         require_once(__DIR__ . '/../../../install-dev/init.php');
+
         $install = new Install();
         \DbPDOCore::createDatabase(_DB_SERVER_, _DB_USER_, _DB_PASSWD_, _DB_NAME_, false);
         $install->clearDatabase();
@@ -54,17 +76,17 @@ class Database
         $install->configureShop(array(
             'admin_firstname' => 'puff',
             'admin_lastname' => 'daddy',
-            'admin_password' => 'test',
-            'admin_email' => 'test@prestashop.com',
+            'admin_password' => 'prestashop_demo',
+            'admin_email' => 'demo@prestashop.com',
             'configuration_agrement' => true,
             'send_informations' => false,
         ));
         $install->installFixtures();
-        $install->installTheme();
         $language = new \Language(1);
         \Context::getContext()->language = $language;
         $install->installModules();
         $install->installModulesAddons();
+        $install->installTheme('classic');
 
         DatabaseDump::create();
     }
